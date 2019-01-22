@@ -3,6 +3,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdio.h>
 
 #define THRESHOLD 6
 
@@ -24,6 +25,7 @@ typedef struct {
 
 void *fib_thread_wrapper(void *args) {
   ((args_t *)args)->result = fib(((args_t *)args)->n);
+  return NULL;
 }
 
 void fib_spawn_thread(int n, fib_td_data_t *td_data) {
@@ -66,11 +68,15 @@ int fib_threaded_main_wrapper(int n, int tc) {
 }
 
 int main(int argc, char **argv) {
+  if(argc < 2){
+    printf("Usage: %s N [t THREADS_COUNT]\n", argv[0]);
+    exit(0);
+  }
   int n = atoi(argv[1]);
 
   if (argc >= 4 && argv[2][0] == 't') {
     int tc = atoi(argv[3]);
-    int r1 = fib_threaded_main_wrapper(n, 8);
+    int r1 = fib_threaded_main_wrapper(n, tc);
     assert(r1 == fib(n));
   } else {
     fib(n);
